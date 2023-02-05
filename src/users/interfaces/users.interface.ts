@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import { Exclude } from 'class-transformer';
@@ -22,7 +22,6 @@ export type ChangeUserType = Partial<Omit<UserEntity, 'id'>>;
 
 const fakeUserName = faker.internet.userName();
 const fakePassword = faker.internet.password();
-const fakeUUID = faker.datatype.uuid();
 
 export class CreateUserDTO implements CreateUserType {
   @ApiProperty({ example: fakeUserName })
@@ -32,12 +31,6 @@ export class CreateUserDTO implements CreateUserType {
   @ApiProperty({ example: fakePassword })
   @IsString()
   password: string;
-}
-
-export class IdParamDTO {
-  @ApiProperty({ example: fakeUUID })
-  @IsUUID()
-  id: string;
 }
 
 export class UpdateUserDTO {

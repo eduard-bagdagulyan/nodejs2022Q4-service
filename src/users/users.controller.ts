@@ -13,11 +13,11 @@ import {
 import { UsersService } from './users.service';
 import {
   CreateUserDTO,
-  IdParamDTO,
   UpdateUserDTO,
   UserEntity,
 } from './interfaces/users.interface';
 import { ApiTags } from '@nestjs/swagger';
+import { IdParamDTO } from '../common/interfaces';
 
 @ApiTags('User')
 @UseInterceptors(ClassSerializerInterceptor)
