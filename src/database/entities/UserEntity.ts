@@ -1,30 +1,38 @@
 import * as crypto from 'node:crypto';
 import DBEntity from './DBEntity';
-
-export type UserEntity = {
-  id: string;
-  login: string;
-  password: string;
-  version: string;
-  createdAt: string;
-  updatedAt: string;
-};
-type CreateUserDTO = Omit<UserEntity, 'id' | 'createdAt' | 'updatedAt'>;
-type ChangeUserDTO = Partial<Omit<UserEntity, 'id'>>;
+import {
+  ChangeUserType,
+  CreateUserType,
+  UserEntity,
+} from '../../users/interfaces/users.interface';
+import { NotFoundException } from '@nestjs/common';
 
 export default class DBUsers extends DBEntity<
   UserEntity,
-  ChangeUserDTO,
-  CreateUserDTO
+  ChangeUserType,
+  CreateUserType
 > {
-  async create(dto: CreateUserDTO) {
-    const created: UserEntity = {
+  async create(dto: CreateUserType) {
+    const created: UserEntity = new UserEntity({
       ...dto,
       id: crypto.randomUUID(),
-      createdAt: new Date().toUTCString(),
-      updatedAt: null,
-    };
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      version: 1,
+    });
     this.entities.push(created);
     return created;
+  }
+
+  async change(id: string, changeDTO: UserEntity) {
+    const idx = this.entities.findIndex((entity) => entity.id === id);
+    if (idx === -1)
+      throw new NotFoundException('Fail during: delete', 'No required entity');
+    const changed: UserEntity = new UserEntity({
+      ...this.entities[idx],
+      ...changeDTO,
+    });
+    this.entities.splice(idx, 1, changed);
+    return changed;
   }
 }

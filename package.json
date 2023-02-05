@@ -21,6 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.3.0",
     "@nestjs/core": "^8.0.0",
