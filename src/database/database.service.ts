@@ -3,5 +3,5 @@ import DBUsers from './entities/UserEntity';
 
 @Injectable()
 export class DatabaseService {
-  readonly users: DBUsers;
+  readonly users: DBUsers = new DBUsers();
 }

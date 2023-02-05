@@ -1,4 +1,5 @@
 import * as lodash from 'lodash';
+import { NotFoundException } from '@nestjs/common';
 
 type UnpackArray<T> = T extends (infer R)[] ? R : never;
 
@@ -103,7 +104,8 @@ export default abstract class DBEntity<
 
   async delete(id: string): Promise<Entity> {
     const idx = this.entities.findIndex((entity) => entity.id === id);
-    if (idx === -1) throw new Error('not found'); // TODO check
+    if (idx === -1)
+      throw new NotFoundException('Fail during: delete', 'No required entity');
     const deleted = this.entities[idx];
     this.entities.splice(idx, 1);
     return deleted;
@@ -111,7 +113,8 @@ export default abstract class DBEntity<
 
   async change(id: string, changeDTO: ChangeDTO): Promise<Entity> {
     const idx = this.entities.findIndex((entity) => entity.id === id);
-    if (idx === -1) throw new Error('not found'); // TODO check
+    if (idx === -1)
+      throw new NotFoundException('Fail during: delete', 'No required entity');
     const changed = { ...this.entities[idx], ...changeDTO };
     this.entities.splice(idx, 1, changed);
     return changed;
