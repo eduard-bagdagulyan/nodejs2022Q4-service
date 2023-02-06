@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import {
   FavoriteEntity,
@@ -55,7 +59,11 @@ export class FavoritesService {
   }
 
   async addFavoriteTrack(id: string): Promise<FavoriteEntity> {
-    await this.tracksService.getTrackById(id);
+    try {
+      await this.tracksService.getTrackById(id);
+    } catch (e) {
+      throw new UnprocessableEntityException(e);
+    }
     return this.db.favoriteTracks.create({ id });
   }
 
@@ -71,7 +79,11 @@ export class FavoritesService {
   }
 
   async addFavoriteAlbum(id: string): Promise<FavoriteEntity> {
-    await this.albumsService.getAlbumById(id);
+    try {
+      await this.albumsService.getAlbumById(id);
+    } catch (e) {
+      throw new UnprocessableEntityException(e);
+    }
     return this.db.favoriteAlbums.create({ id });
   }
 
@@ -87,8 +99,12 @@ export class FavoritesService {
   }
 
   async addFavoriteArtist(id: string): Promise<FavoriteEntity> {
-    await this.albumsService.getAlbumById(id);
-    return this.db.favoriteAlbums.create({ id });
+    try {
+      await this.artistsService.getArtistById(id);
+    } catch (e) {
+      throw new UnprocessableEntityException(e);
+    }
+    return this.db.favoriteArtists.create({ id });
   }
 
   async deleteArtistFromFavorites(id: string): Promise<FavoriteEntity> {

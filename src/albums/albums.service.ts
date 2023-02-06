@@ -43,6 +43,27 @@ export class AlbumsService {
 
   async deleteAlbum(id: string): Promise<AlbumEntity> {
     await this.getAlbumById(id);
+
+    const albumTracks = await this.db.tracks.findMany({
+      key: 'albumId',
+      equals: id,
+    });
+    for (const track of albumTracks) {
+      await this.db.tracks.change(track.id, {
+        ...track,
+        albumId: null,
+      });
+    }
+
+    const isInFavorites = await this.db.favoriteAlbums.findOne({
+      key: 'id',
+      equals: id,
+    });
+
+    if (isInFavorites) {
+      await this.db.favoriteAlbums.delete(id);
+    }
+
     return this.db.albums.delete(id);
   }
 }

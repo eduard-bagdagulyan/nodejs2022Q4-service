@@ -18,7 +18,7 @@ import { IdParamDTO } from '../common/interfaces';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Track')
-@Controller('tracks')
+@Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 

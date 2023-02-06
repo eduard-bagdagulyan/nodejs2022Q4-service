@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FavoritesService } from './favorites.service';
 import { FavoritesResponse } from './interfaces/favories.interface';
@@ -20,6 +20,7 @@ export class FavoritesController {
     return `Track ${params.id} added to favorites successfully!`;
   }
 
+  @HttpCode(204)
   @Delete('track/:id')
   async deleteTrackFromFavorites(@Param() params: IdParamDTO): Promise<void> {
     await this.favoritesService.deleteTrackFromFavorites(params.id);
@@ -31,6 +32,7 @@ export class FavoritesController {
     return `Album ${params.id} added to favorites successfully!`;
   }
 
+  @HttpCode(204)
   @Delete('album/:id')
   async deleteAlbumFromFavorites(@Param() params: IdParamDTO): Promise<void> {
     await this.favoritesService.deleteAlbumFromFavorites(params.id);
@@ -42,6 +44,7 @@ export class FavoritesController {
     return `Artist ${params.id} added to favorites successfully!`;
   }
 
+  @HttpCode(204)
   @Delete('artist/:id')
   async deleteArtistFromFavorites(@Param() params: IdParamDTO): Promise<void> {
     await this.favoritesService.deleteArtistFromFavorites(params.id);

@@ -35,6 +35,38 @@ export class ArtistsService {
 
   async deleteArtist(id: string): Promise<ArtistEntity> {
     await this.getArtistById(id);
+
+    const artistsTracks = await this.db.tracks.findMany({
+      key: 'artistId',
+      equals: id,
+    });
+    for (const track of artistsTracks) {
+      await this.db.tracks.change(track.id, {
+        ...track,
+        artistId: null,
+      });
+    }
+
+    const artistsAlbums = await this.db.albums.findMany({
+      key: 'artistId',
+      equals: id,
+    });
+    for (const album of artistsAlbums) {
+      await this.db.albums.change(album.id, {
+        ...album,
+        artistId: null,
+      });
+    }
+
+    const isInFavorites = await this.db.favoriteArtists.findOne({
+      key: 'id',
+      equals: id,
+    });
+
+    if (isInFavorites) {
+      await this.db.favoriteArtists.delete(id);
+    }
+
     return this.db.artists.delete(id);
   }
 }

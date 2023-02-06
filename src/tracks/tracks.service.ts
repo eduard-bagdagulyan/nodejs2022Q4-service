@@ -55,6 +55,16 @@ export class TracksService {
 
   async deleteTrack(id: string): Promise<TrackEntity> {
     await this.getTrackById(id);
+
+    const isInFavorites = await this.db.favoriteTracks.findOne({
+      key: 'id',
+      equals: id,
+    });
+
+    if (isInFavorites) {
+      await this.db.favoriteTracks.delete(id);
+    }
+
     return this.db.tracks.delete(id);
   }
 }
