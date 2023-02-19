@@ -1,21 +1,7 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
-import { Exclude } from 'class-transformer';
-
-export class UserEntity {
-  id: string;
-  login: string;
-  @Exclude()
-  password: string;
-  version: number;
-  createdAt: number;
-  updatedAt: number;
-
-  constructor(props: UserEntity) {
-    Object.assign(this, props);
-  }
-}
+import { UserEntity } from '../entities/user.entity';
 
 export type CreateUserType = Pick<UserEntity, 'login' | 'password'>;
 export type ChangeUserType = Partial<Omit<UserEntity, 'id'>>;

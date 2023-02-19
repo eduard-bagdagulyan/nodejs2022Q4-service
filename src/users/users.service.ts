@@ -3,23 +3,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
-import {
-  CreateUserDTO,
-  UpdateUserDTO,
-  UserEntity,
-} from './interfaces/users.interface';
+import { CreateUserDTO, UpdateUserDTO } from './interfaces/users.interface';
+import { UserEntity } from './entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
+  ) {}
 
   async getUsers(): Promise<UserEntity[]> {
-    return this.db.users.findMany();
+    return this.usersRepository.find();
   }
 
   async getUserById(id): Promise<UserEntity> {
-    const user = await this.db.users.findOne({ key: 'id', equals: id });
+    const user = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -29,7 +30,14 @@ export class UsersService {
   }
 
   async createUser(body: CreateUserDTO): Promise<UserEntity> {
-    return this.db.users.create(body);
+    const user = await this.usersRepository.create({
+      ...body,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      version: 1,
+    });
+
+    return this.usersRepository.save(user);
   }
 
   async updateUser(id: string, body: UpdateUserDTO): Promise<UserEntity> {
@@ -39,17 +47,19 @@ export class UsersService {
       throw new ForbiddenException('Old password is invalid');
     }
 
-    const userWithChangedPassword: UserEntity = new UserEntity({
+    const userWithChangedPassword: UserEntity = this.usersRepository.create({
       ...user,
       password: body.newPassword,
       version: ++user.version,
       updatedAt: Date.now(),
     });
-    return this.db.users.change(id, userWithChangedPassword);
+    await this.usersRepository.update({ id }, userWithChangedPassword);
+    return userWithChangedPassword;
   }
 
   async deleteUser(id: string): Promise<UserEntity> {
-    await this.getUserById(id);
-    return this.db.users.delete(id);
+    const user = await this.getUserById(id);
+    await this.usersRepository.delete({ id });
+    return user;
   }
 }
