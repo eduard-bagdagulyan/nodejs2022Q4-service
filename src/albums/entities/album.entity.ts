@@ -17,4 +17,7 @@ export class AlbumEntity {
 
   @Column({ nullable: true })
   artistId: string;
+
+  @Column({ select: false, default: false })
+  isFavorite: boolean;
 }

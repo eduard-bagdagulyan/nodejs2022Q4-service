@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
 import {
   CreateArtistDTO,
   UpdateArtistDTO,
@@ -11,13 +10,16 @@ import { ArtistEntity } from './entities/artist.entity';
 @Injectable()
 export class ArtistsService {
   constructor(
-    private readonly db: DatabaseService,
     @InjectRepository(ArtistEntity)
     private readonly artistsRepository: Repository<ArtistEntity>,
   ) {}
 
   async getAllArtists(): Promise<ArtistEntity[]> {
     return this.artistsRepository.find();
+  }
+
+  async getFavoriteArtists(): Promise<ArtistEntity[]> {
+    return this.artistsRepository.findBy({ isFavorite: true });
   }
 
   async getArtistById(id: string): Promise<ArtistEntity> {
@@ -42,40 +44,8 @@ export class ArtistsService {
   }
 
   async deleteArtist(id: string): Promise<ArtistEntity> {
-    const user = await this.getArtistById(id);
-
-    // const artistsTracks = await this.db.tracks.findMany({
-    //   key: 'artistId',
-    //   equals: id,
-    // });
-    // for (const track of artistsTracks) {
-    //   await this.db.tracks.change(track.id, {
-    //     ...track,
-    //     artistId: null,
-    //   });
-    // }
-    //
-    // const artistsAlbums = await this.db.albums.findMany({
-    //   key: 'artistId',
-    //   equals: id,
-    // });
-    // for (const album of artistsAlbums) {
-    //   await this.db.albums.change(album.id, {
-    //     ...album,
-    //     artistId: null,
-    //   });
-    // }
-    //
-    // const isInFavorites = await this.db.favoriteArtists.findOne({
-    //   key: 'id',
-    //   equals: id,
-    // });
-    //
-    // if (isInFavorites) {
-    //   await this.db.favoriteArtists.delete(id);
-    // } TODO add relation
-
+    const artist = await this.getArtistById(id);
     await this.artistsRepository.delete({ id });
-    return user;
+    return artist;
   }
 }

@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ArtistEntity } from '../../artists/entities/artist.entity';
 import { AlbumEntity } from '../../albums/entities/album.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('tracks')
 export class TrackEntity {
@@ -23,5 +24,9 @@ export class TrackEntity {
   artist: ArtistEntity;
 
   @ManyToOne((type) => AlbumEntity, { onDelete: 'SET NULL' })
-  album: ArtistEntity;
+  album: AlbumEntity;
+
+  @Exclude()
+  @Column({ select: false, default: false })
+  isFavorite: boolean;
 }

@@ -2,19 +2,16 @@ import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 
-export class TrackEntity {
+export interface TrackEntity {
   id: string;
   name: string;
   artistId: string | null;
   albumId: string | null;
   duration: number;
-
-  constructor(props: TrackEntity) {
-    Object.assign(this, props);
-  }
+  isFavorite: boolean;
 }
 
-export type CreateTrackType = Omit<TrackEntity, 'id'>;
+export type CreateTrackType = Omit<TrackEntity, 'id' | 'isFavorite'>;
 export type ChangeTrackType = Partial<CreateTrackType>;
 
 export class CreateTrackDTO implements CreateTrackType {
@@ -39,4 +36,6 @@ export class CreateTrackDTO implements CreateTrackType {
   duration: number;
 }
 
-export class UpdateTrackDTO extends CreateTrackDTO {}
+export class UpdateTrackDTO extends CreateTrackDTO implements ChangeTrackType {
+  isFavorite: boolean;
+}

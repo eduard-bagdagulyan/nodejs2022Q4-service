@@ -19,6 +19,10 @@ export class TracksService {
     return this.tracksRepository.find();
   }
 
+  async getFavoriteTracks(): Promise<TrackEntity[]> {
+    return this.tracksRepository.findBy({ isFavorite: true });
+  }
+
   async getTrackById(id: string): Promise<TrackEntity> {
     const track = await this.tracksRepository.findOneBy({ id });
     if (!track) {
@@ -56,16 +60,6 @@ export class TracksService {
 
   async deleteTrack(id: string): Promise<TrackEntity> {
     const track = await this.getTrackById(id);
-
-    // const isInFavorites = await this.db.favoriteTracks.findOne({
-    //   key: 'id',
-    //   equals: id,
-    // });
-    //
-    // if (isInFavorites) {
-    //   await this.db.favoriteTracks.delete(id);
-    // } TODO check
-
     await this.tracksRepository.delete({ id });
     return track;
   }

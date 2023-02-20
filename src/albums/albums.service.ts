@@ -17,6 +17,10 @@ export class AlbumsService {
     return this.albumsRepository.find();
   }
 
+  async getFavoriteAlbums(): Promise<AlbumEntity[]> {
+    return this.albumsRepository.findBy({ isFavorite: true });
+  }
+
   async getAlbumById(id: string): Promise<AlbumEntity> {
     const album = await this.albumsRepository.findOneBy({ id });
     if (!album) {
@@ -43,29 +47,8 @@ export class AlbumsService {
   }
 
   async deleteAlbum(id: string): Promise<AlbumEntity> {
-    const user = await this.getAlbumById(id);
-
-    // const albumTracks = await this.db.tracks.findMany({
-    //   key: 'albumId',
-    //   equals: id,
-    // });
-    // for (const track of albumTracks) {
-    //   await this.db.tracks.change(track.id, {
-    //     ...track,
-    //     albumId: null,
-    //   });
-    // }
-    //
-    // const isInFavorites = await this.db.favoriteAlbums.findOne({
-    //   key: 'id',
-    //   equals: id,
-    // });
-    //
-    // if (isInFavorites) {
-    //   await this.db.favoriteAlbums.delete(id);
-    // } TODO add relations
-
+    const album = await this.getAlbumById(id);
     await this.albumsRepository.delete({ id });
-    return user;
+    return album;
   }
 }
