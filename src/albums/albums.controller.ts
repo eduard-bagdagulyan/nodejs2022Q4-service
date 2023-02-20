@@ -10,12 +10,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AlbumsService } from './albums.service';
-import {
-  AlbumEntity,
-  CreateAlbumDTO,
-  UpdateAlbumDTO,
-} from './interfaces/albums.interface';
+import { CreateAlbumDTO, UpdateAlbumDTO } from './interfaces/albums.interface';
 import { IdParamDTO } from '../common/interfaces';
+import { AlbumEntity } from './entities/album.entity';
 
 @ApiTags('Album')
 @Controller('album')

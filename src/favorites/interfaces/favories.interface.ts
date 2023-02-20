@@ -1,5 +1,5 @@
 import { ArtistEntity } from '../../artists/interfaces/artists.interface';
-import { AlbumEntity } from '../../albums/interfaces/albums.interface';
+import { IAlbum } from '../../albums/interfaces/albums.interface';
 import { TrackEntity } from '../../tracks/interfaces/tracks.interface';
 
 export class FavoriteEntity {
@@ -12,6 +12,6 @@ export class FavoriteEntity {
 
 export class FavoritesResponse {
   artists: ArtistEntity[];
-  albums: AlbumEntity[];
+  albums: IAlbum[];
   tracks: TrackEntity[];
 }

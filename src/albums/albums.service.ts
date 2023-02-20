@@ -1,25 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  AlbumEntity,
-  CreateAlbumDTO,
-  UpdateAlbumDTO,
-} from './interfaces/albums.interface';
-import { DatabaseService } from '../database/database.service';
+import { CreateAlbumDTO, UpdateAlbumDTO } from './interfaces/albums.interface';
 import { ArtistsService } from '../artists/artists.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AlbumEntity } from './entities/album.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
   constructor(
-    private readonly db: DatabaseService,
+    @InjectRepository(AlbumEntity)
+    private readonly albumsRepository: Repository<AlbumEntity>,
     private readonly artistsService: ArtistsService,
   ) {}
 
   async getAllAlbums(): Promise<AlbumEntity[]> {
-    return this.db.albums.findMany();
+    return this.albumsRepository.find();
   }
 
   async getAlbumById(id: string): Promise<AlbumEntity> {
-    const album = await this.db.albums.findOne({ key: 'id', equals: id });
+    const album = await this.albumsRepository.findOneBy({ id });
     if (!album) {
       throw new NotFoundException('Album not found');
     }
@@ -30,7 +29,8 @@ export class AlbumsService {
     if (body.artistId) {
       await this.artistsService.getArtistById(body.artistId);
     }
-    return this.db.albums.create(body);
+    const album = this.albumsRepository.create(body);
+    return this.albumsRepository.save(album);
   }
 
   async updateAlbum(id: string, body: UpdateAlbumDTO): Promise<AlbumEntity> {
@@ -38,32 +38,34 @@ export class AlbumsService {
       await this.artistsService.getArtistById(body.artistId);
     }
     await this.getAlbumById(id);
-    return this.db.albums.change(id, body);
+    await this.albumsRepository.update({ id }, body);
+    return this.albumsRepository.findOneBy({ id });
   }
 
   async deleteAlbum(id: string): Promise<AlbumEntity> {
-    await this.getAlbumById(id);
+    const user = await this.getAlbumById(id);
 
-    const albumTracks = await this.db.tracks.findMany({
-      key: 'albumId',
-      equals: id,
-    });
-    for (const track of albumTracks) {
-      await this.db.tracks.change(track.id, {
-        ...track,
-        albumId: null,
-      });
-    }
+    // const albumTracks = await this.db.tracks.findMany({
+    //   key: 'albumId',
+    //   equals: id,
+    // });
+    // for (const track of albumTracks) {
+    //   await this.db.tracks.change(track.id, {
+    //     ...track,
+    //     albumId: null,
+    //   });
+    // }
+    //
+    // const isInFavorites = await this.db.favoriteAlbums.findOne({
+    //   key: 'id',
+    //   equals: id,
+    // });
+    //
+    // if (isInFavorites) {
+    //   await this.db.favoriteAlbums.delete(id);
+    // } TODO add relations
 
-    const isInFavorites = await this.db.favoriteAlbums.findOne({
-      key: 'id',
-      equals: id,
-    });
-
-    if (isInFavorites) {
-      await this.db.favoriteAlbums.delete(id);
-    }
-
-    return this.db.albums.delete(id);
+    await this.albumsRepository.delete({ id });
+    return user;
   }
 }

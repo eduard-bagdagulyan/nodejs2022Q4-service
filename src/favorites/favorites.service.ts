@@ -12,7 +12,7 @@ import { ArtistEntity } from '../artists/interfaces/artists.interface';
 import { ArtistsService } from '../artists/artists.service';
 import { AlbumsService } from '../albums/albums.service';
 import { TracksService } from '../tracks/tracks.service';
-import { AlbumEntity } from '../albums/interfaces/albums.interface';
+import { IAlbum } from '../albums/interfaces/albums.interface';
 import { TrackEntity } from '../tracks/interfaces/tracks.interface';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class FavoritesService {
       await this.db.favoriteTracks.findMany();
 
     const favoriteArtists: ArtistEntity[] = [];
-    const favoriteAlbums: AlbumEntity[] = [];
+    const favoriteAlbums: IAlbum[] = [];
     const favoriteTracks: TrackEntity[] = [];
 
     for (const item of favoriteArtistsIds) {
