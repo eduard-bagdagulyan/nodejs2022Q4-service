@@ -22,7 +22,11 @@ services:
     restart: always
     networks:
       - custom_bridge
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 networks:
   custom_bridge:
+volumes:
+  pgdata:
 
