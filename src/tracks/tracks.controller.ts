@@ -9,13 +9,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
-import {
-  CreateTrackDTO,
-  TrackEntity,
-  UpdateTrackDTO,
-} from './interfaces/tracks.interface';
+import { CreateTrackDTO, UpdateTrackDTO } from './interfaces/tracks.interface';
 import { IdParamDTO } from '../common/interfaces';
 import { ApiTags } from '@nestjs/swagger';
+import { TrackEntity } from './entities/track.entity';
 
 @ApiTags('Track')
 @Controller('track')

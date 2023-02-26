@@ -18,7 +18,15 @@ npm install
 ```
 
 ## Running application
-
+#### Starting DB and app containers
+```
+docker compose up
+```
+#### Running migrations
+```
+npm run migration:run
+```
+#### Starting app
 ```
 npm start
 ```

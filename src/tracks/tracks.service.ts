@@ -1,27 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  CreateTrackDTO,
-  TrackEntity,
-  UpdateTrackDTO,
-} from './interfaces/tracks.interface';
-import { DatabaseService } from '../database/database.service';
+import { CreateTrackDTO, UpdateTrackDTO } from './interfaces/tracks.interface';
 import { ArtistsService } from '../artists/artists.service';
 import { AlbumsService } from '../albums/albums.service';
+import { TrackEntity } from './entities/track.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TracksService {
   constructor(
-    private readonly db: DatabaseService,
+    @InjectRepository(TrackEntity)
+    private readonly tracksRepository: Repository<TrackEntity>,
     private readonly artistsService: ArtistsService,
     private readonly albumsService: AlbumsService,
   ) {}
 
   async getAllTracks(): Promise<TrackEntity[]> {
-    return this.db.tracks.findMany();
+    return this.tracksRepository.find();
+  }
+
+  async getFavoriteTracks(): Promise<TrackEntity[]> {
+    return this.tracksRepository.findBy({ isFavorite: true });
   }
 
   async getTrackById(id: string): Promise<TrackEntity> {
-    const track = await this.db.tracks.findOne({ key: 'id', equals: id });
+    const track = await this.tracksRepository.findOneBy({ id });
     if (!track) {
       throw new NotFoundException('Track not found');
     }
@@ -37,7 +40,8 @@ export class TracksService {
       await this.albumsService.getAlbumById(body.albumId);
     }
 
-    return this.db.tracks.create(body);
+    const track = this.tracksRepository.create(body);
+    return this.tracksRepository.save(track);
   }
 
   async updateTrack(id: string, body: UpdateTrackDTO): Promise<TrackEntity> {
@@ -50,21 +54,13 @@ export class TracksService {
     }
 
     await this.getTrackById(id);
-    return this.db.tracks.change(id, body);
+    await this.tracksRepository.update({ id }, body);
+    return this.tracksRepository.findOneBy({ id });
   }
 
   async deleteTrack(id: string): Promise<TrackEntity> {
-    await this.getTrackById(id);
-
-    const isInFavorites = await this.db.favoriteTracks.findOne({
-      key: 'id',
-      equals: id,
-    });
-
-    if (isInFavorites) {
-      await this.db.favoriteTracks.delete(id);
-    }
-
-    return this.db.tracks.delete(id);
+    const track = await this.getTrackById(id);
+    await this.tracksRepository.delete({ id });
+    return track;
   }
 }

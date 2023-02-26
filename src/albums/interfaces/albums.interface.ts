@@ -1,24 +1,16 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 
-export class AlbumEntity {
+export interface IAlbum {
   id: string;
   name: string;
   year: number;
   artistId: string | null;
-
-  constructor(props: AlbumEntity) {
-    Object.assign(this, props);
-  }
+  isFavorite: boolean;
 }
 
-export type CreateAlbumType = Omit<AlbumEntity, 'id'>;
+export type CreateAlbumType = Omit<IAlbum, 'id' | 'isFavorite'>;
 export type ChangeAlbumType = Partial<CreateAlbumType>;
 
 export class CreateAlbumDTO implements CreateAlbumType {
@@ -36,4 +28,6 @@ export class CreateAlbumDTO implements CreateAlbumType {
   artistId: string | null;
 }
 
-export class UpdateAlbumDTO extends CreateAlbumDTO {}
+export class UpdateAlbumDTO extends CreateAlbumDTO implements ChangeAlbumType {
+  isFavorite: boolean;
+}

@@ -2,17 +2,14 @@ import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 
-export class ArtistEntity {
+export interface ArtistEntity {
   id: string;
   name: string;
   grammy: boolean;
-
-  constructor(props: ArtistEntity) {
-    Object.assign(this, props);
-  }
+  isFavorite: boolean;
 }
 
-export type CreateArtistType = Omit<ArtistEntity, 'id'>;
+export type CreateArtistType = Omit<ArtistEntity, 'id' | 'isFavorite'>;
 export type ChangeArtistType = Partial<CreateArtistType>;
 
 export class CreateArtistDTO implements CreateArtistType {
@@ -25,4 +22,9 @@ export class CreateArtistDTO implements CreateArtistType {
   grammy: boolean;
 }
 
-export class UpdateArtistDTO extends CreateArtistDTO {}
+export class UpdateArtistDTO
+  extends CreateArtistDTO
+  implements ChangeArtistType
+{
+  isFavorite: boolean;
+}
