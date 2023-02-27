@@ -6,12 +6,16 @@ export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
+  @Column('varchar', { unique: true })
   login: string;
 
   @Exclude()
   @Column('varchar')
   password: string;
+
+  @Exclude()
+  @Column({ nullable: true })
+  refreshToken: string;
 
   @Column('int')
   version: number;

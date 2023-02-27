@@ -19,7 +19,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async getUserById(id): Promise<UserEntity> {
+  async getUserById(id: string): Promise<UserEntity> {
     const user = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
@@ -27,6 +27,10 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getUserByLogin(login: string): Promise<UserEntity> {
+    return await this.usersRepository.findOneBy({ login });
   }
 
   async createUser(body: CreateUserDTO): Promise<UserEntity> {
@@ -55,6 +59,14 @@ export class UsersService {
     });
     await this.usersRepository.update({ id }, userWithChangedPassword);
     return userWithChangedPassword;
+  }
+
+  async updateUserToken(id: string, token: string) {
+    const user = await this.getUserById(id);
+    return this.usersRepository.update(
+      { id },
+      { ...user, refreshToken: token },
+    );
   }
 
   async deleteUser(id: string): Promise<UserEntity> {
